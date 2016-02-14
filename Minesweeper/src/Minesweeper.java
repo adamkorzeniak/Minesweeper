@@ -21,7 +21,8 @@ public class Minesweeper {
 	JPanel field;
 	MouseListener bl, fl;
 	ArrayList<Integer> chooseFrom, chosen, neighbours;
-	
+	double startTime, endTime, currentTime, pauseTime, resumeTime;
+
 	public static void main(String[] args) {
 		Minesweeper game = new Minesweeper();
 		game.preMainMenu();
@@ -104,6 +105,10 @@ public class Minesweeper {
 		// add code here
 	}
 
+	public void saveGame() {
+
+	}
+
 	public void setData() {
 		if (easy.isSelected()) {
 			width = 9;
@@ -128,7 +133,8 @@ public class Minesweeper {
 			height = Integer.parseInt(hText.getText());
 			mines = Integer.parseInt(mText.getText());
 
-			if ((width > 8 && width < 31) && (height > 8 && height < 25)&& (mines > 9 && mines < (width - 1) * (height - 1) + 1)) {
+			if ((width > 8 && width < 31) && (height > 8 && height < 25)
+					&& (mines > 9 && mines < (width - 1) * (height - 1) + 1)) {
 				setUpGame();
 			} else {
 				error = "";
@@ -154,7 +160,8 @@ public class Minesweeper {
 				}
 				if (mines < 10 || mines > (widthM - 1) * (heightM - 1)) {
 					if ((width > 8 && width < 31) && (height > 8 && height < 25)) {
-						error += "Mines range depends on size. For current size choose beetween 10 and " + (width - 1) * (height - 1);
+						error += "Mines range depends on size. For current size choose beetween 10 and "
+								+ (width - 1) * (height - 1);
 						if (mines < 10) {
 							mText.setText("10");
 						} else {
@@ -202,12 +209,14 @@ public class Minesweeper {
 			bl = new ButtonListener();
 			a.addMouseListener(bl);
 		}
+		frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+		frame.addWindowListener(new CloseFrameListener());
 		frame.add(field, BorderLayout.CENTER);
 		frame.add(gameSouth, BorderLayout.SOUTH);
 		frame.setSize(45 * width, 45 * height + 40);
 		frame.setVisible(true);
 	}
-	
+
 	public void reveal(NewButton b) {
 		if (b.isMine) {
 			bust();
@@ -489,4 +498,41 @@ public class Minesweeper {
 		public void mouseReleased(MouseEvent m) {
 		}
 	}
+
+	public class CloseFrameListener implements WindowListener {
+
+		public void windowActivated(WindowEvent arg0) {
+		}
+
+		public void windowClosed(WindowEvent arg0) {
+		}
+
+		public void windowClosing(WindowEvent arg0) {
+			pauseTime = System.currentTimeMillis();
+			int result = JOptionPane.showConfirmDialog(null, "Save game?", "Do you want to save game",
+					JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
+
+			if (result == JOptionPane.YES_OPTION) {
+				saveGame();
+				System.exit(0);
+			} else if (result == JOptionPane.NO_OPTION) {
+				System.exit(0);
+			} else if (result == JOptionPane.CANCEL_OPTION || result == JOptionPane.CLOSED_OPTION) {
+				resumeTime = System.currentTimeMillis();
+			}
+		}
+
+		public void windowDeactivated(WindowEvent arg0) {
+		}
+
+		public void windowDeiconified(WindowEvent arg0) {
+		}
+
+		public void windowIconified(WindowEvent arg0) {
+		}
+
+		public void windowOpened(WindowEvent arg0) {
+		}
+	}
+
 }
