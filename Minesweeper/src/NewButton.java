@@ -1,8 +1,9 @@
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import javax.swing.*;
 
-public class NewButton extends JButton{
+public class NewButton extends JButton implements Serializable{
 	boolean isMine, flagged, done;
 	int bombNeighbours;
 	ArrayList<NewButton> neighbours;
