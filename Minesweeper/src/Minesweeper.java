@@ -115,7 +115,7 @@ public class Minesweeper {
 	}
 
 	public void loadGame() {
-		ArrayList<NewButton> buttons = new ArrayList<NewButton>();
+		buttons = new ArrayList<NewButton>();
 		try {
 			FileInputStream fileStream = new FileInputStream("Game.sav");
 			ObjectInputStream is = new ObjectInputStream(fileStream);
@@ -139,8 +139,12 @@ public class Minesweeper {
 		field = new JPanel(grid);
 		for (NewButton a: buttons) {
 			field.add(a);
+			if(a.isFlagged()){
+				fl = new FlagListener();
+				a.addMouseListener(fl);
+			} else {
 			bl = new ButtonListener();
-			a.addMouseListener(bl);
+			a.addMouseListener(bl);}
 		}
 		left = saveGame.left;
 		minesAtStart = saveGame.minesAtStart;
@@ -287,6 +291,7 @@ public class Minesweeper {
 	}
 
 	public void reveal(NewButton b) {
+		System.out.println(buttons.indexOf(b));
 		if (b.isMine) {
 			bust();
 		} else if (b.bombNeighbours > 0) {
@@ -296,13 +301,13 @@ public class Minesweeper {
 				left--;
 			}
 		} else {
-			if (b.isEnabled() && !b.isFlagged()) {
+			if (b.isEnabled()) {
 				b.setEnabled(false);
 				left--;
 			}
 			neighbours(buttons.indexOf(b));
 			for (int a : neighbours) {
-				if (buttons.get(a).isEnabled() && !buttons.get(a).isFlagged()) {
+				if (buttons.get(a).isEnabled()) {
 					buttons.get(a).setEnabled(false);
 					left--;
 					if (buttons.get(a).bombNeighbours > 0) {
@@ -316,10 +321,13 @@ public class Minesweeper {
 	}
 
 	public void bust() {
+		System.out.println("done");
 		for (NewButton b : buttons) {
 			b.setEnabled(false);
 			if (b.isMine) {
 				b.setText("X");
+			} else if (b.bombNeighbours>0){
+				b.setText(Integer.toString(b.bombNeighbours));
 			}
 		}
 		JOptionPane.showOptionDialog(null, "Przegra³eœ, Ty Lamusie", "Przegrana", JOptionPane.DEFAULT_OPTION,
