@@ -146,6 +146,8 @@ public class Minesweeper {
 			bl = new ButtonListener();
 			a.addMouseListener(bl);}
 		}
+		height = saveGame.height;
+		width = saveGame.width;
 		left = saveGame.left;
 		minesAtStart = saveGame.minesAtStart;
 		
@@ -287,9 +289,6 @@ public class Minesweeper {
 		frame.setVisible(true);
 	}
 	
-	public void loadSetUpGame() {
-	}
-
 	public void reveal(NewButton b) {
 		System.out.println(buttons.indexOf(b));
 		if (b.isMine) {
