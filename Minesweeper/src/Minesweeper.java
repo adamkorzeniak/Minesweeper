@@ -16,7 +16,7 @@ public class Minesweeper {
 	JPanel jradio, text, input, gameNorth;
 	JTextField wText, hText, mText;
 	JLabel w, h, m, timerLabel, minesLeft;
-	int width, height, mines, heightM, widthM, minesAtStart, left;
+	int width, height, mines, heightM, widthM, minesAtStart, left, pixels;
 	String error, highscore;
 	ArrayList<NewButton> buttons, toCheck;
 	GridLayout grid;
@@ -35,6 +35,7 @@ public class Minesweeper {
 		loadGame = new NewButton("Load Game");
 		newGame.addActionListener(new NewGameListener());
 		loadGame.addActionListener(new LoadGameListener());
+		pixels = 70;
 
 		frame = new JFrame("(Almost) The Best Minesweeper Game");
 		frame.add(newGame, BorderLayout.CENTER);
@@ -50,6 +51,7 @@ public class Minesweeper {
 			saveGame = (SaveGame) is.readObject();
 			is.close();
 			width = saveGame.width;
+			height = saveGame.height;
 		} catch (Exception ex) {
 			ex.printStackTrace();}
 		if(!(width > 0)) {
@@ -115,7 +117,7 @@ public class Minesweeper {
 	}
 
 	public void loadGame() {
-		ArrayList<NewButton> buttons = new ArrayList<NewButton>();
+		buttons = new ArrayList<NewButton>();
 		try {
 			FileInputStream fileStream = new FileInputStream("Game.sav");
 			ObjectInputStream is = new ObjectInputStream(fileStream);
@@ -123,8 +125,6 @@ public class Minesweeper {
 			is.close();
 		} catch (Exception ex) {
 			ex.printStackTrace();}
-
-		System.out.println(left);
 		
 		frame.getContentPane().removeAll();
 		timerLabel = new JLabel("Amount of sec: ");
@@ -139,8 +139,12 @@ public class Minesweeper {
 		field = new JPanel(grid);
 		for (NewButton a: buttons) {
 			field.add(a);
+			if(a.isFlagged()){
+				fl = new FlagListener();
+				a.addMouseListener(fl);
+			} else {
 			bl = new ButtonListener();
-			a.addMouseListener(bl);
+			a.addMouseListener(bl);}
 		}
 		left = saveGame.left;
 		minesAtStart = saveGame.minesAtStart;
@@ -150,7 +154,7 @@ public class Minesweeper {
 		frame.addWindowListener(new CloseFrameListener());
 		frame.add(field, BorderLayout.CENTER);
 		frame.add(gameNorth, BorderLayout.NORTH);
-		frame.setSize(45 * saveGame.width, 45 * saveGame.height + 40);
+		frame.setSize(pixels * width, pixels * height + 40);
 		frame.setVisible(true);
 	}
 	public void saveGame() {
@@ -170,7 +174,6 @@ public class Minesweeper {
 			objectStream.close();
 		} catch (IOException ex) {
 			ex.printStackTrace();}
-		System.out.println(left);
 	}
 
 	public void setData() {
@@ -279,7 +282,7 @@ public class Minesweeper {
 		frame.addWindowListener(new CloseFrameListener());
 		frame.add(field, BorderLayout.CENTER);
 		frame.add(gameNorth, BorderLayout.NORTH);
-		frame.setSize(45 * width, 45 * height + 40);
+		frame.setSize(pixels * width, pixels * height + 40);
 		frame.setVisible(true);
 	}
 	
@@ -296,13 +299,13 @@ public class Minesweeper {
 				left--;
 			}
 		} else {
-			if (b.isEnabled() && !b.isFlagged()) {
+			if (b.isEnabled()) {
 				b.setEnabled(false);
 				left--;
 			}
 			neighbours(buttons.indexOf(b));
 			for (int a : neighbours) {
-				if (buttons.get(a).isEnabled() && !buttons.get(a).isFlagged()) {
+				if (buttons.get(a).isEnabled()) {
 					buttons.get(a).setEnabled(false);
 					left--;
 					if (buttons.get(a).bombNeighbours > 0) {
@@ -320,6 +323,8 @@ public class Minesweeper {
 			b.setEnabled(false);
 			if (b.isMine) {
 				b.setText("X");
+			} else if (b.bombNeighbours>0){
+				b.setText(Integer.toString(b.bombNeighbours));
 			}
 		}
 		JOptionPane.showOptionDialog(null, "Przegra³eœ, Ty Lamusie", "Przegrana", JOptionPane.DEFAULT_OPTION,
@@ -617,5 +622,4 @@ public class Minesweeper {
 		public void windowOpened(WindowEvent arg0) {
 		}
 	}
-
 }
