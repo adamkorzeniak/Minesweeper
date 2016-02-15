@@ -376,6 +376,7 @@ public class Minesweeper {
 	public void neighbours(int index) {
 		int x = getX(index);
 		int y = getY(index);
+		if(neighbours.isEmpty())
 		neighbours = new ArrayList<Integer>();
 		if (x > 1 && x < width && y > 1 && y < height) {
 			neighbours.add(index + width + 1);
