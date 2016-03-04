@@ -8,7 +8,7 @@ import javax.swing.*;
 public class Minesweeper {
 
 	Minesweeper game;
-	boolean isSet, gameEnded, pauseGame, gameAborted;
+	boolean isSet, gameEnded, pauseGame, gameAborted, highscoreEmpty;
 	NewButton newGame, loadGame, initiate, reGame;
 	JFrame frame;
 	ButtonGroup difficulty;
@@ -44,7 +44,7 @@ public class Minesweeper {
 		newGame.addActionListener(new NewGameListener());
 		loadGame.addActionListener(new LoadGameListener());
 		pixels = 25;
-		
+
 		menuBar = new JMenuBar();
 		menu = new JMenu("File");
 		menuBar.add(menu);
@@ -57,7 +57,7 @@ public class Minesweeper {
 		menuItem1.addActionListener(new MenuListener());
 		menuItem2.addActionListener(new MenuListener());
 		menuItem3.addActionListener(new MenuListener());
-		
+
 		flagIcon = new ImageIcon("images/flag.png");
 		blankIcon = new ImageIcon("images/blank.png");
 		mineIcon = new ImageIcon("images/mine.png");
@@ -89,7 +89,11 @@ public class Minesweeper {
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
+
 		File hScore = new File("data/Highscores.sav");
+		File folder = new File("data");
+		folder.mkdir();
+
 		if (!hScore.exists()) {
 			new Highscore().go();
 		}
@@ -103,13 +107,9 @@ public class Minesweeper {
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
-		System.out.println(easyHighscore);
 		if (!(width > 0)) {
 			loadGame.setEnabled(false);
 		}
-		System.out.println(easyHighscore);
-		System.out.println(mediumHighscore);
-		System.out.println(expertHighscore);
 	}
 
 	public void mainMenu() {
@@ -570,10 +570,11 @@ public class Minesweeper {
 			}
 		}
 	}
+
 	public void updateMines() {
 		mines = minesAtStart;
-		for(NewButton a: buttons) {
-			if (a.isFlagged()){
+		for (NewButton a : buttons) {
+			if (a.isFlagged()) {
 				mines--;
 			}
 		}
@@ -636,7 +637,7 @@ public class Minesweeper {
 				isSet = true;
 				displayNum((NewButton) m.getComponent());
 				m.getComponent().setEnabled(false);
-				((NewButton)(m.getComponent())).deFlag();
+				((NewButton) (m.getComponent())).deFlag();
 				left--;
 				updateMines();
 				chooseFrom = new ArrayList<Integer>();
@@ -672,6 +673,7 @@ public class Minesweeper {
 					}
 				}
 				reveal((NewButton) (m.getComponent()));
+
 				Time time = new Time();
 				Thread timer = new Thread(time);
 				timer.start();
@@ -709,83 +711,108 @@ public class Minesweeper {
 					if (highscore == "easy") {
 						for (Double el : easyHighscore) {
 							if (score < el) {
-								if (easyHighscore.indexOf(el)==0) {
+								if (easyHighscore.indexOf(el) == 0) {
 									information = "Contratulations, you beat the Highscore \nYour score is: ";
 									int scoreSeconds = (int) (score % 60);
 									int scoreMinutes = (int) (score / 60) % 60;
-									information += scoreMinutes + ":" + scoreSeconds;
-								} else if  (easyHighscore.indexOf(el)>0) {
+									information += String.format("%d:%02d", scoreMinutes, scoreSeconds);
+								} else if (easyHighscore.indexOf(el) > 0) {
 									String th = "th";
-									if (easyHighscore.indexOf(el)==1) {th = "nd";}
-									if (easyHighscore.indexOf(el)==2) {th = "rd";}
-									information = "Contratulations, you achieved " + (easyHighscore.indexOf(el)+1) + th + " result \nYour score is: ";
+									if (easyHighscore.indexOf(el) == 1) {
+										th = "nd";
+									}
+									if (easyHighscore.indexOf(el) == 2) {
+										th = "rd";
+									}
+									information = "Contratulations, you achieved " + (easyHighscore.indexOf(el) + 1)
+											+ th + " result \nYour score is: ";
 									int scoreSeconds = (int) (score % 60);
 									int scoreMinutes = (int) (score / 60) % 60;
-									information += scoreMinutes + ":" + scoreSeconds;
+									information += String.format("%d:%02d", scoreMinutes, scoreSeconds);
 								}
 								easyHighscore.add(easyHighscore.indexOf(el), new Double(score));
 								break;
 							}
+							information = "Contratulations, you won the game \nYour score is: ";
+							int scoreSeconds = (int) (score % 60);
+							int scoreMinutes = (int) (score / 60) % 60;
+							information += String.format("%d:%02d", scoreMinutes, scoreSeconds);
 						}
 						if (easyHighscore.size() > 5) {
 							easyHighscore.remove(5);
 						}
 						highscoreOutput.easy = easyHighscore;
-						System.out.println(easyHighscore);
 
 					} else if (highscore == "medium") {
 						for (Double el : mediumHighscore) {
 							if (score < el) {
-								if (mediumHighscore.indexOf(el)==0) {
+								if (mediumHighscore.indexOf(el) == 0) {
 									information = "Contratulations, you beat the Highscore \nYour score is: ";
 									int scoreSeconds = (int) (score % 60);
 									int scoreMinutes = (int) (score / 60) % 60;
-									information += scoreMinutes + ":" + scoreSeconds;
-								} else if  (mediumHighscore.indexOf(el)>0) {
+									information += String.format("%d:%02d", scoreMinutes, scoreSeconds);
+								} else if (mediumHighscore.indexOf(el) > 0) {
 									String th = "th";
-									if (mediumHighscore.indexOf(el)==1) {th = "nd";}
-									if (mediumHighscore.indexOf(el)==2) {th = "rd";}
-									information = "Contratulations, you achieved " + (mediumHighscore.indexOf(el)+1) + th + " result \nYour score is: ";
+									if (mediumHighscore.indexOf(el) == 1) {
+										th = "nd";
+									}
+									if (mediumHighscore.indexOf(el) == 2) {
+										th = "rd";
+									}
+									information = "Contratulations, you achieved " + (mediumHighscore.indexOf(el) + 1)
+											+ th + " result \nYour score is: ";
 									int scoreSeconds = (int) (score % 60);
 									int scoreMinutes = (int) (score / 60) % 60;
-									information += scoreMinutes + ":" + scoreSeconds;
+									information += String.format("%d:%02d", scoreMinutes, scoreSeconds);
 								}
 								mediumHighscore.add(mediumHighscore.indexOf(el), new Double(score));
 								break;
 							}
+							information = "Contratulations, you won the game \nYour score is: ";
+							int scoreSeconds = (int) (score % 60);
+							int scoreMinutes = (int) (score / 60) % 60;
+							information += String.format("%d:%02d", scoreMinutes, scoreSeconds);
 						}
 						if (mediumHighscore.size() > 5) {
 							mediumHighscore.remove(5);
 						}
 						highscoreOutput.medium = mediumHighscore;
-						System.out.println(mediumHighscore);
-						
+
 					} else if (highscore == "expert") {
 						for (Double el : expertHighscore) {
 							if (score < el) {
-								if (expertHighscore.indexOf(el)==0) {
+								if (expertHighscore.indexOf(el) == 0) {
 									information = "Contratulations, you beat the Highscore \nYour score is: ";
 									int scoreSeconds = (int) (score % 60);
 									int scoreMinutes = (int) (score / 60) % 60;
-									information += scoreMinutes + ":" + scoreSeconds;
-								} else if  (expertHighscore.indexOf(el)>0) {
+									information += String.format("%d:%02d", scoreMinutes, scoreSeconds);
+								} else if (expertHighscore.indexOf(el) > 0) {
 									String th = "th";
-									if (expertHighscore.indexOf(el)==1) {th = "nd";}
-									if (expertHighscore.indexOf(el)==2) {th = "rd";}
-									information = "Contratulations, you achieved " + (expertHighscore.indexOf(el)+1) + th + " result \nYour score is: ";
+									if (expertHighscore.indexOf(el) == 1) {
+										th = "nd";
+									}
+									if (expertHighscore.indexOf(el) == 2) {
+										th = "rd";
+									}
+									information = "Contratulations, you achieved " + (expertHighscore.indexOf(el) + 1)
+											+ th + " result \nYour score is: ";
 									int scoreSeconds = (int) (score % 60);
 									int scoreMinutes = (int) (score / 60) % 60;
-									information += scoreMinutes + ":" + scoreSeconds;
+									information += String.format("%d:%02d", scoreMinutes, scoreSeconds);
 								}
 								expertHighscore.add(expertHighscore.indexOf(el), new Double(score));
 								break;
 							}
+							information = "Contratulations, you won the game \nYour score is: ";
+							int scoreSeconds = (int) (score % 60);
+							int scoreMinutes = (int) (score / 60) % 60;
+							information += String.format("%d:%02d", scoreMinutes, scoreSeconds);
 						}
 						if (expertHighscore.size() > 5) {
 							expertHighscore.remove(5);
 						}
 						highscoreOutput.expert = expertHighscore;
-						System.out.println(expertHighscore);
+					}
 					try {
 						FileOutputStream fileStream = new FileOutputStream("data/Highscores.sav");
 						ObjectOutputStream objectStream = new ObjectOutputStream(fileStream);
@@ -796,12 +823,12 @@ public class Minesweeper {
 					} catch (IOException ex) {
 						ex.printStackTrace();
 					}
-				}
 
-				JOptionPane.showOptionDialog(null, information, "Wygrana!", JOptionPane.DEFAULT_OPTION,
-						JOptionPane.INFORMATION_MESSAGE, null, null, null);
-				setUpNextGame();
-			}}
+					JOptionPane.showOptionDialog(null, information, "Wygrana!", JOptionPane.DEFAULT_OPTION,
+							JOptionPane.INFORMATION_MESSAGE, null, null, null);
+					setUpNextGame();
+				}
+			}
 		}
 
 		public void mouseReleased(MouseEvent e) {
@@ -888,9 +915,10 @@ public class Minesweeper {
 		public void windowOpened(WindowEvent arg0) {
 		}
 	}
+
 	public class MenuListener implements ActionListener {
-		public void actionPerformed (ActionEvent a) {
-			if (a.getSource()== menuItem1) {
+		public void actionPerformed(ActionEvent a) {
+			if (a.getSource() == menuItem1) {
 				if (isSet) {
 					pauseGame = true;
 					pauseTime = System.currentTimeMillis();
@@ -906,7 +934,7 @@ public class Minesweeper {
 							e.printStackTrace();
 						}
 						gameEnded = true;
-						
+
 						try {
 							Thread.sleep(200);
 						} catch (InterruptedException e) {
@@ -928,7 +956,7 @@ public class Minesweeper {
 						e.printStackTrace();
 					}
 					gameEnded = true;
-					
+
 					try {
 						Thread.sleep(200);
 					} catch (InterruptedException e) {
@@ -937,28 +965,34 @@ public class Minesweeper {
 					setUpNextGame();
 					mainMenu();
 				}
-				
-			} else if (a.getSource()== menuItem2) {
-				String[] string = {"Easy", "Pro", "Expert"};
-				
-				
+
+			} else if (a.getSource() == menuItem2) {
+				String[] string = { "Easy", "Pro", "Expert" };
+
 				box = new JComboBox(string);
 				box.addActionListener(new ComboboxListener());
-
+				highscoreEmpty = true;
 				String hint = "Choose difficulty level";
-				
-				records = "<html>Best results for Easy level: <br>" ;
-				for (Double el: easyHighscore) {
-					if (el < 99999){
+
+				records = "<html>Best results for Easy level: <br>";
+				for (Double el : easyHighscore) {
+					if (el < 99999) {
+						highscoreEmpty = false;
 						int scoreSeconds = (int) (el % 60);
 						int scoreMinutes = (int) (el / 60) % 60;
-						int place = easyHighscore.indexOf(el)+1;
-						records += place + "<html>:      " + scoreMinutes + ":" + scoreSeconds + "<br>";
-				} else {break;}
+						int place = easyHighscore.indexOf(el) + 1;
+						records += place + "<html>:      " + String.format("%d:%02d", scoreMinutes, scoreSeconds)
+								+ "<br>";
+					} else {
+						break;
+					}
 				}
 				records += "</html>";
+				if (highscoreEmpty)
+					records = "None";
 				showRecords = new JLabel(records);
-				
+				highscoreEmpty = true;
+
 				Object[] things = new Object[3];
 				things[0] = hint;
 				things[1] = box;
@@ -966,8 +1000,8 @@ public class Minesweeper {
 
 				JOptionPane dialog = new JOptionPane();
 				dialog.showMessageDialog(null, things);
-				
-			} else if (a.getSource()== menuItem3) {
+
+			} else if (a.getSource() == menuItem3) {
 				if (isSet) {
 					pauseGame = true;
 					pauseTime = System.currentTimeMillis();
@@ -994,52 +1028,75 @@ public class Minesweeper {
 					pauseGame = false;
 				} else {
 					System.exit(0);
-				}}}
-	
+				}
+			}
+		}
+
 	}
+
 	public class ComboboxListener implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
 
 			if (box.getSelectedIndex() == 0) {
-				records = "<html>Best results for Easy level: <br>" ;
-				for (Double el: easyHighscore) {
-					if (el < 99999){
+				records = "<html>Best results for Easy level: <br>";
+				for (Double el : easyHighscore) {
+					if (el < 99999) {
+						highscoreEmpty = false;
 						int scoreSeconds = (int) (el % 60);
 						int scoreMinutes = (int) (el / 60) % 60;
-						int place = easyHighscore.indexOf(el)+1;
-						records += place + "<html>:      " + scoreMinutes + ":" + scoreSeconds + "<br>";
-				} else {break;}
+						int place = easyHighscore.indexOf(el) + 1;
+						records += place + "<html>:      " + String.format("%d:%02d", scoreMinutes, scoreSeconds)
+								+ "<br>";
+					} else {
+						break;
+					}
 				}
 				records += "</html>";
+				if (highscoreEmpty)
+					records = "None";
 				showRecords.setText(records);
+				highscoreEmpty = true;
 			} else if (box.getSelectedIndex() == 1) {
-				records = "<html>Best results for Pro level: <br>" ;
-				for (Double el: mediumHighscore) {
-					if (el < 99999){
+				records = "<html>Best results for Pro level: <br>";
+				for (Double el : mediumHighscore) {
+					if (el < 99999) {
+						highscoreEmpty = true;
 						int scoreSeconds = (int) (el % 60);
 						int scoreMinutes = (int) (el / 60) % 60;
-						int place = mediumHighscore.indexOf(el)+1;
-						records += place + "<html>:      " + scoreMinutes + ":" + scoreSeconds + "<br>";
-				} else {break;}
+						int place = mediumHighscore.indexOf(el) + 1;
+						records += place + "<html>:      " + String.format("%d:%02d", scoreMinutes, scoreSeconds)
+								+ "<br>";
+					} else {
+						break;
+					}
 				}
 				records += "</html>";
+				if (highscoreEmpty)
+					records = "None";
 				showRecords.setText(records);
+				highscoreEmpty = true;
 			} else if (box.getSelectedIndex() == 2) {
-				records = "<html>Best results for Expert level: <br>" ;
-				for (Double el: expertHighscore) {
-					if (el < 99999){
+				records = "<html>Best results for Expert level: <br>";
+				for (Double el : expertHighscore) {
+					highscoreEmpty = true;
+					if (el < 99999) {
 						int scoreSeconds = (int) (el % 60);
 						int scoreMinutes = (int) (el / 60) % 60;
-						int place = expertHighscore.indexOf(el)+1;
-						records += place + "<html>:      " + scoreMinutes + ":" + scoreSeconds + "<br>";
-				} else {break;}
+						int place = expertHighscore.indexOf(el) + 1;
+						records += place + "<html>:      " + String.format("%d:%02d", scoreMinutes, scoreSeconds)
+								+ "<br>";
+					} else {
+						break;
+					}
 				}
 				records += "</html>";
+				if (highscoreEmpty)
+					records = "None";
 				showRecords.setText(records);
+				highscoreEmpty = true;
 			}
 		}
 	}
-
 
 	public class Time implements Runnable {
 		long startTime, currentTime;
@@ -1049,7 +1106,7 @@ public class Minesweeper {
 		public void run() {
 			go();
 		}
- 
+
 		public void go() {
 			startTime = System.currentTimeMillis();
 
@@ -1057,7 +1114,7 @@ public class Minesweeper {
 				currentTime = System.currentTimeMillis();
 				if (!pauseGame) {
 					timerLabel.setText(String.format("Time:  %d:%02d     ", timerMinutes, timerSeconds));
-					currentTimer = (currentTime - startTime - toSubtract) / 1000.0  + loadedTime;
+					currentTimer = (currentTime - startTime - toSubtract) / 1000.0 + loadedTime;
 					timerSeconds = (int) (currentTimer % 60);
 					timerMinutes = (int) (currentTimer / 60) % 60;
 					score = currentTimer;
