@@ -7,35 +7,32 @@ import javax.swing.*;
 
 public class Minesweeper {
 
-	Minesweeper game;
 	boolean isSet, gameEnded, pauseGame, gameAborted, highscoreEmpty;
+	int width, height, mines, heightM, widthM, minesAtStart, left, pixels;
+	long pauseTime, unpauseTime, toSubtract;
+	double score, loadedTime;
+	String error, highscore, records;
+	ArrayList<Integer> chooseFrom, chosen, neighbours;
+	ArrayList<Double> easyHighscore, mediumHighscore, expertHighscore, highscoreInput;
+	ArrayList<NewButton> buttons, toCheck;
 	NewButton newGame, loadGame, initiate, reGame;
 	JFrame frame;
 	ButtonGroup difficulty;
 	JRadioButton easy, medium, expert, custom;
-	JPanel jradio, text, input, gameNorth;
+	JPanel jradio, text, input, gameNorth, field;
 	JTextField wText, hText, mText;
-	public JLabel w, h, m, timerLabel, minesLeft, showRecords;
-	int width, height, mines, heightM, widthM, minesAtStart, left, pixels;
-	double score, loadedTime;
-	long pauseTime, unpauseTime, toSubtract;
-	String error, highscore, records;
-	ArrayList<Double> easyHighscore, mediumHighscore, expertHighscore, highscoreInput;
-	ArrayList<NewButton> buttons, toCheck;
+	JLabel w, h, m, timerLabel, minesLeft, showRecords;
 	GridLayout grid;
-	JPanel field;
-	MouseListener bl, fl;
-	ArrayList<Integer> chooseFrom, chosen, neighbours;
-	SaveGame saveGame;
-	JMenuBar menuBar;
 	JMenu menu;
+	JMenuBar menuBar;
 	JMenuItem menuItem1, menuItem2, menuItem3;
-	ImageIcon flagIcon, mineIcon, blankIcon, num1, num2, num3, num4, num5, num6, num7, num8;
 	JComboBox box;
-
+	ImageIcon flagIcon, mineIcon, blankIcon, num1, num2, num3, num4, num5, num6, num7, num8;
+	SaveGame saveGame;
+	MouseListener bl, fl;
+	
 	public static void main(String[] args) {
-		Minesweeper game = new Minesweeper();
-		game.preMainMenu();
+		new Minesweeper().preMainMenu();
 	}
 
 	public void preMainMenu() {
@@ -981,8 +978,7 @@ public class Minesweeper {
 						int scoreSeconds = (int) (el % 60);
 						int scoreMinutes = (int) (el / 60) % 60;
 						int place = easyHighscore.indexOf(el) + 1;
-						records += place + "<html>:      " + String.format("%d:%02d", scoreMinutes, scoreSeconds)
-								+ "<br>";
+						records += place + "<html>:      " + String.format("%d:%02d", scoreMinutes, scoreSeconds)+ "<br>";
 					} else {
 						break;
 					}
@@ -1083,8 +1079,7 @@ public class Minesweeper {
 						int scoreSeconds = (int) (el % 60);
 						int scoreMinutes = (int) (el / 60) % 60;
 						int place = expertHighscore.indexOf(el) + 1;
-						records += place + "<html>:      " + String.format("%d:%02d", scoreMinutes, scoreSeconds)
-								+ "<br>";
+						records += place + "<html>:      " + String.format("%d:%02d", scoreMinutes, scoreSeconds)+ "<br>";
 					} else {
 						break;
 					}
