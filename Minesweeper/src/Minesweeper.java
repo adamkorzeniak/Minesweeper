@@ -2,35 +2,34 @@ import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
 import java.nio.file.Files;
-import java.util.*;
+import java.util.ArrayList;
 import javax.swing.*;
 
 public class Minesweeper {
 
-	boolean isSet, gameEnded, pauseGame, gameAborted, highscoreEmpty;
-	int width, height, mines, heightM, widthM, minesAtStart, left, pixels;
-	long pauseTime, unpauseTime, toSubtract;
-	double score, loadedTime;
-	String error, highscore, records;
-	ArrayList<Integer> chooseFrom, chosen, neighbours;
-	ArrayList<Double> easyHighscore, mediumHighscore, expertHighscore, highscoreInput;
-	ArrayList<NewButton> buttons, toCheck;
-	NewButton newGame, loadGame, initiate, reGame;
-	JFrame frame;
-	ButtonGroup difficulty;
-	JRadioButton easy, medium, expert, custom;
-	JPanel jradio, text, input, gameNorth, field;
-	JTextField wText, hText, mText;
-	JLabel w, h, m, timerLabel, minesLeft, showRecords;
-	GridLayout grid;
-	JMenu menu;
-	JMenuBar menuBar;
-	JMenuItem menuItem1, menuItem2, menuItem3;
-	JComboBox box;
-	ImageIcon flagIcon, mineIcon, blankIcon, num1, num2, num3, num4, num5, num6, num7, num8;
-	SaveGame saveGame;
-	MouseListener bl, fl;
-	
+	private boolean isSet, gameEnded, highscoreEmpty;
+	private int width, height, mines, heightM, widthM, minesAtStart, left, pixels;
+	private double score, loadedTime;
+	private String error, highscore, records;
+	private ArrayList<Integer> chooseFrom, chosen, neighbours;
+	private ArrayList<Double> easyHighscore, mediumHighscore, expertHighscore, highscoreInput;
+	private ArrayList<NewButton> buttons;
+	private NewButton newGame, loadGame, initiate, reGame;
+	private JFrame frame;
+	private ButtonGroup difficulty;
+	private JRadioButton easy, medium, expert, custom;
+	private JPanel jradio, input, gameNorth, field;
+	private JTextField wText, hText, mText;
+	private JLabel w, h, m, timerLabel, minesLeft, showRecords;
+	private GridLayout grid;
+	private JMenu menu;
+	private JMenuBar menuBar;
+	private JMenuItem menuItem1, menuItem2, menuItem3;
+	private JComboBox box;
+	private ImageIcon flagIcon, mineIcon, blankIcon, num1, num2, num3, num4, num5, num6, num7, num8;
+	private SaveGame saveGame;
+	private MouseListener bl, fl;
+
 	public static void main(String[] args) {
 		new Minesweeper().preMainMenu();
 	}
@@ -81,8 +80,9 @@ public class Minesweeper {
 			ObjectInputStream is = new ObjectInputStream(fileStream);
 			saveGame = (SaveGame) is.readObject();
 			is.close();
-			width = saveGame.width;
-			height = saveGame.height;
+			width = saveGame.getWidth();
+			height = saveGame.getHeight();
+			highscore = saveGame.getHighscore();
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
@@ -191,10 +191,11 @@ public class Minesweeper {
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
-		pixels = saveGame.pixels;
-		mines = saveGame.mines;
-		left = saveGame.left;
-		minesAtStart = saveGame.minesAtStart;
+		pixels = saveGame.getPixels();
+		mines = saveGame.getMines();
+		left = saveGame.getMinesLeft();
+		minesAtStart = saveGame.getMinesAtStart();
+		highscore = saveGame.getHighscore();
 
 		frame.getContentPane().removeAll();
 		minesLeft = new JLabel("Mines left: " + mines);
@@ -202,7 +203,7 @@ public class Minesweeper {
 		gameNorth = new JPanel();
 		gameNorth.add(timerLabel);
 		gameNorth.add(minesLeft);
-		grid = new GridLayout(saveGame.height, saveGame.width);
+		grid = new GridLayout(saveGame.getHeight(), saveGame.getWidth());
 		grid.setHgap(1);
 		grid.setVgap(1);
 		field = new JPanel(grid);
@@ -223,7 +224,7 @@ public class Minesweeper {
 		frame.add(field, BorderLayout.CENTER);
 		frame.add(gameNorth, BorderLayout.NORTH);
 		frame.setSize(pixels * width, pixels * height + 40);
-		loadedTime = saveGame.loadedTime;
+		loadedTime = saveGame.getLoadedTime();
 		Time time = new Time();
 		Thread timer = new Thread(time);
 		timer.start();
@@ -362,9 +363,9 @@ public class Minesweeper {
 	}
 
 	public void reveal(NewButton b) {
-		if (b.isMine) {
+		if (b.getMine()) {
 			bust();
-		} else if (b.bombNeighbours > 0) {
+		} else if (b.getBombNeighbours()> 0) {
 			if (b.isEnabled() && !b.isFlagged()) {
 				displayNum(b);
 				b.setEnabled(false);
@@ -388,7 +389,7 @@ public class Minesweeper {
 					buttons.get(a).deFlag();
 					left--;
 					updateMines();
-					if (buttons.get(a).bombNeighbours > 0) {
+					if (buttons.get(a).getBombNeighbours() > 0) {
 						displayNum(buttons.get(a));
 					} else {
 						reveal(buttons.get(a));
@@ -401,16 +402,25 @@ public class Minesweeper {
 	public void bust() {
 		gameEnded = true;
 		for (NewButton b : buttons) {
-			if (b.isMine) {
+			if (b.getMine()) {
 				b.setIcon(mineIcon);
 				b.setDisabledIcon(mineIcon);
-			} else if (b.bombNeighbours > 0) {
+			} else if (b.getBombNeighbours() > 0) {
 				displayNum(b);
-			} else if (b.bombNeighbours == 0) {
+			} else if (b.getBombNeighbours() == 0) {
 				displayNum(b);
 			}
 			b.setEnabled(false);
 			b.deFlag();
+		}
+		File file = new File("data/Game.sav");
+		File file2 = new File("data/GameSet.sav");
+		loadedTime = 0;
+		try {
+			Files.deleteIfExists(file.toPath());
+			Files.deleteIfExists(file2.toPath());
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 		JOptionPane.showOptionDialog(null, "Przegra³eœ, Ty Lamusie", "Przegrana", JOptionPane.DEFAULT_OPTION,
 				JOptionPane.INFORMATION_MESSAGE, null, null, null);
@@ -418,7 +428,6 @@ public class Minesweeper {
 	}
 
 	public void setUpNextGame() {
-		gameAborted = false;
 		isSet = false;
 		gameEnded = false;
 		frame.getContentPane().removeAll();
@@ -524,8 +533,8 @@ public class Minesweeper {
 	}
 
 	public void displayNum(NewButton b) {
-		if (!b.isMine) {
-			switch (b.bombNeighbours) {
+		if (!b.getMine()) {
+			switch (b.getBombNeighbours()) {
 			case 0:
 				b.setIcon(blankIcon);
 				b.setDisabledIcon(blankIcon);
@@ -607,9 +616,12 @@ public class Minesweeper {
 	public class InitiateListener implements ActionListener {
 		public void actionPerformed(ActionEvent a) {
 
-			File file = new File("data/GameSet.sav");
+			File file = new File("data/Game.sav");
+			File file2 = new File("data/GameSet.sav");
+			loadedTime = 0;
 			try {
 				Files.deleteIfExists(file.toPath());
+				Files.deleteIfExists(file2.toPath());
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -651,20 +663,24 @@ public class Minesweeper {
 				for (int i = 0; i < mines; i++) {
 					int inde = (int) (Math.random() * chooseFrom.size());
 					chosen.add(chooseFrom.get(inde));
-					buttons.get(chooseFrom.get(inde)).isMine = true;
+					buttons.get(chooseFrom.get(inde)).setMine(true);
 					chooseFrom.remove(chooseFrom.get(inde));
 				}
 				for (NewButton b : buttons) {
-					if (!b.isMine) {
+					if (!b.getMine()) {
 
 						int inde = buttons.indexOf(b);
 						int count = 0;
 						neighbours(inde);
 						for (int i : neighbours) {
-							if (buttons.get(i).isMine == true) {
+							if (buttons.get(i).getMine()) {
 								count++;
 							}
-							b.bombNeighbours = count;
+							try {
+								b.setBombNeighbours(count);
+							} catch (Exception e) {
+								e.printStackTrace();
+							}
 						}
 						neighbours = null;
 					}
@@ -685,7 +701,6 @@ public class Minesweeper {
 					if (!flag.isFlagged()) {
 						flag.setFlagged();
 						flag.setIcon(flagIcon);
-						flag.done = true;
 						mines--;
 						minesLeft.setText("Mines left: " + mines);
 						flag.removeMouseListener(bl);
@@ -697,6 +712,15 @@ public class Minesweeper {
 			if (minesAtStart == left) {
 				gameEnded = true;
 				String information = "";
+				File file = new File("data/Game.sav");
+				File file2 = new File("data/GameSet.sav");
+				loadedTime = 0;
+				try {
+					Files.deleteIfExists(file.toPath());
+					Files.deleteIfExists(file2.toPath());
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 				try {
 					Thread.sleep(500);
 				} catch (InterruptedException e) {
@@ -704,8 +728,10 @@ public class Minesweeper {
 				}
 				if (score > 0) {
 					Highscore highscoreOutput = new Highscore(easyHighscore, mediumHighscore, expertHighscore);
-
-					if (highscore == "easy") {
+					System.out.println(highscore.equals("easy"));
+					System.out.println(highscore);
+					if (highscore.equals("easy")) {
+						System.out.println("inside");
 						for (Double el : easyHighscore) {
 							if (score < el) {
 								if (easyHighscore.indexOf(el) == 0) {
@@ -738,9 +764,9 @@ public class Minesweeper {
 						if (easyHighscore.size() > 5) {
 							easyHighscore.remove(5);
 						}
-						highscoreOutput.easy = easyHighscore;
+						highscoreOutput.setHighscoreList("easy", easyHighscore);
 
-					} else if (highscore == "medium") {
+					} else if (highscore.equals("medium")) {
 						for (Double el : mediumHighscore) {
 							if (score < el) {
 								if (mediumHighscore.indexOf(el) == 0) {
@@ -773,9 +799,9 @@ public class Minesweeper {
 						if (mediumHighscore.size() > 5) {
 							mediumHighscore.remove(5);
 						}
-						highscoreOutput.medium = mediumHighscore;
+						highscoreOutput.setHighscoreList("medium", mediumHighscore);
 
-					} else if (highscore == "expert") {
+					} else if (highscore.equals("expert")) {
 						for (Double el : expertHighscore) {
 							if (score < el) {
 								if (expertHighscore.indexOf(el) == 0) {
@@ -808,14 +834,18 @@ public class Minesweeper {
 						if (expertHighscore.size() > 5) {
 							expertHighscore.remove(5);
 						}
-						highscoreOutput.expert = expertHighscore;
+						highscoreOutput.setHighscoreList("expert", expertHighscore);
 					}
 					try {
 						FileOutputStream fileStream = new FileOutputStream("data/Highscores.sav");
 						ObjectOutputStream objectStream = new ObjectOutputStream(fileStream);
-						objectStream.writeObject(highscoreOutput.easy);
-						objectStream.writeObject(highscoreOutput.medium);
-						objectStream.writeObject(highscoreOutput.expert);
+						try {
+							objectStream.writeObject(highscoreOutput.getHighscoreList("easy"));
+							objectStream.writeObject(highscoreOutput.getHighscoreList("medium"));
+							objectStream.writeObject(highscoreOutput.getHighscoreList("expert"));
+						} catch (Exception ex) {
+							ex.printStackTrace();
+						}
 						objectStream.close();
 					} catch (IOException ex) {
 						ex.printStackTrace();
@@ -849,7 +879,6 @@ public class Minesweeper {
 					if (flag.isFlagged()) {
 						flag.deFlag();
 						flag.setIcon(null);
-						flag.done = true;
 						mines++;
 						minesLeft.setText("Mines left: " + mines);
 						flag.removeMouseListener(fl);
@@ -873,29 +902,25 @@ public class Minesweeper {
 
 		public void windowClosing(WindowEvent arg0) {
 			if (isSet) {
-				pauseGame = true;
-				pauseTime = System.currentTimeMillis();
 				frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 				int result = JOptionPane.showConfirmDialog(null, "Save game?", "Do you want to save game",
 						JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
 
 				if (result == JOptionPane.YES_OPTION) {
-					toSubtract += unpauseTime - pauseTime;
 					saveGame();
 					System.exit(0);
 				} else if (result == JOptionPane.NO_OPTION) {
-					File file = new File("data/GameSet.sav");
+					File file = new File("data/Game.sav");
+					File file2 = new File("data/GameSet.sav");
 					try {
 						Files.deleteIfExists(file.toPath());
+						Files.deleteIfExists(file2.toPath());
 					} catch (IOException e) {
 						e.printStackTrace();
 					}
 					System.exit(0);
 				} else if (result == JOptionPane.CANCEL_OPTION || result == JOptionPane.CLOSED_OPTION) {
-					unpauseTime = System.currentTimeMillis();
 				}
-				toSubtract += unpauseTime - pauseTime;
-				pauseGame = false;
 			}
 
 		}
@@ -917,16 +942,15 @@ public class Minesweeper {
 		public void actionPerformed(ActionEvent a) {
 			if (a.getSource() == menuItem1) {
 				if (isSet) {
-					pauseGame = true;
-					pauseTime = System.currentTimeMillis();
 					int result = JOptionPane.showConfirmDialog(null, "Start new game?", "Do you want to start new game",
 							JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
 
 					if (result == JOptionPane.YES_OPTION) {
-						toSubtract = 0;
-						File file = new File("data/GameSet.sav");
+						File file = new File("data/Game.sav");
+						File file2 = new File("data/GameSet.sav");
 						try {
 							Files.deleteIfExists(file.toPath());
+							Files.deleteIfExists(file2.toPath());
 						} catch (IOException e) {
 							e.printStackTrace();
 						}
@@ -940,15 +964,13 @@ public class Minesweeper {
 						setUpNextGame();
 						mainMenu();
 					} else if (result == JOptionPane.NO_OPTION || result == JOptionPane.CLOSED_OPTION) {
-						unpauseTime = System.currentTimeMillis();
-						toSubtract += unpauseTime - pauseTime;
 					}
-
-					pauseGame = false;
 				} else {
-					File file = new File("data/GameSet.sav");
+					File file = new File("data/Game.sav");
+					File file2 = new File("data/GameSet.sav");
 					try {
 						Files.deleteIfExists(file.toPath());
+						Files.deleteIfExists(file2.toPath());
 					} catch (IOException e) {
 						e.printStackTrace();
 					}
@@ -978,7 +1000,8 @@ public class Minesweeper {
 						int scoreSeconds = (int) (el % 60);
 						int scoreMinutes = (int) (el / 60) % 60;
 						int place = easyHighscore.indexOf(el) + 1;
-						records += place + "<html>:      " + String.format("%d:%02d", scoreMinutes, scoreSeconds)+ "<br>";
+						records += place + "<html>:      " + String.format("%d:%02d", scoreMinutes, scoreSeconds)
+								+ "<br>";
 					} else {
 						break;
 					}
@@ -999,29 +1022,25 @@ public class Minesweeper {
 
 			} else if (a.getSource() == menuItem3) {
 				if (isSet) {
-					pauseGame = true;
-					pauseTime = System.currentTimeMillis();
 					frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 					int result = JOptionPane.showConfirmDialog(null, "Save game?", "Do you want to save game",
 							JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
 
 					if (result == JOptionPane.YES_OPTION) {
-						toSubtract += unpauseTime - pauseTime;
 						saveGame();
 						System.exit(0);
 					} else if (result == JOptionPane.NO_OPTION) {
-						File file = new File("data/GameSet.sav");
+						File file = new File("data/Game.sav");
+						File file2 = new File("data/GameSet.sav");
 						try {
 							Files.deleteIfExists(file.toPath());
+							Files.deleteIfExists(file2.toPath());
 						} catch (IOException e) {
 							e.printStackTrace();
 						}
 						System.exit(0);
 					} else if (result == JOptionPane.CANCEL_OPTION || result == JOptionPane.CLOSED_OPTION) {
-						unpauseTime = System.currentTimeMillis();
 					}
-					toSubtract += unpauseTime - pauseTime;
-					pauseGame = false;
 				} else {
 					System.exit(0);
 				}
@@ -1079,7 +1098,8 @@ public class Minesweeper {
 						int scoreSeconds = (int) (el % 60);
 						int scoreMinutes = (int) (el / 60) % 60;
 						int place = expertHighscore.indexOf(el) + 1;
-						records += place + "<html>:      " + String.format("%d:%02d", scoreMinutes, scoreSeconds)+ "<br>";
+						records += place + "<html>:      " + String.format("%d:%02d", scoreMinutes, scoreSeconds)
+								+ "<br>";
 					} else {
 						break;
 					}
@@ -1107,20 +1127,17 @@ public class Minesweeper {
 
 			while (!gameEnded) {
 				currentTime = System.currentTimeMillis();
-				if (!pauseGame) {
 					timerLabel.setText(String.format("Time:  %d:%02d     ", timerMinutes, timerSeconds));
-					currentTimer = (currentTime - startTime - toSubtract) / 1000.0 + loadedTime;
+					currentTimer = (currentTime - startTime) / 1000.0 + loadedTime;
 					timerSeconds = (int) (currentTimer % 60);
 					timerMinutes = (int) (currentTimer / 60) % 60;
 					score = currentTimer;
-				}
 				try {
 					Thread.sleep(100);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
 			}
-
 		}
 	}
 

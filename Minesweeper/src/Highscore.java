@@ -1,11 +1,30 @@
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
+import java.io.*;
 import java.util.ArrayList;
 
 public class Highscore implements Serializable {
-	ArrayList<Double> easy, medium, expert;
+	private ArrayList<Double> easy, medium, expert;
+	
+	public void setHighscoreList(String difficulty, ArrayList<Double> highscoreList) {
+		if(difficulty == "easy") {
+			easy = highscoreList;
+		} else if(difficulty == "medium") {
+			medium = highscoreList;
+		} else if(difficulty == "expert") {
+			expert = highscoreList;
+		}
+	}
+	
+	public ArrayList<Double> getHighscoreList(String highscoreList) throws Exception{
+		if(highscoreList == "easy") {
+			return easy;
+		} else if(highscoreList == "medium") {
+			return medium;
+		} else if(highscoreList == "expert") {
+			return expert;
+		} else {
+			throw new Exception("There is no such highscoreList as " + highscoreList);
+		}
+	}
 
 	public Highscore(){
 	}

@@ -1,3 +1,5 @@
 /bin/
 /Nowy folder/
-/Game.sav
+data/Game.sav
+data/GameSet.sav
+data/Highscores.sav

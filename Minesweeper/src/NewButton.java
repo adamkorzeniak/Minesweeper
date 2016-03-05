@@ -1,12 +1,9 @@
 import java.io.Serializable;
-import java.util.ArrayList;
-
 import javax.swing.*;
 
 public class NewButton extends JButton implements Serializable{
-	boolean isMine, flagged, done;
-	int bombNeighbours;
-	ArrayList<NewButton> neighbours;
+	private boolean mine, flagged;
+	private int bombNeighbours;
 	
 	public NewButton() {
 		super();
@@ -18,6 +15,17 @@ public class NewButton extends JButton implements Serializable{
 		super(icon);
 	}
 	
+	public void setBombNeighbours(int bombs) throws Exception {
+		if (bombs >= 0 && bombs < 9) {
+		bombNeighbours = bombs;
+		} else {
+			throw new Exception("Amount of bombs incorrect");
+		}
+	}
+	public int getBombNeighbours() {
+		return bombNeighbours;
+	}
+	
 	public void setFlagged() {
 		flagged = true;
 	}
@@ -27,4 +35,11 @@ public class NewButton extends JButton implements Serializable{
 	public boolean isFlagged() {
 		return flagged;
 	}
+	public void setMine(boolean isIt) {
+		mine = isIt;
+	}
+	public boolean getMine() {
+		return mine;
+	}
+	
 }
