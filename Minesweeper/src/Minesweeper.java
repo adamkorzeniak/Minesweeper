@@ -8,7 +8,7 @@ import javax.swing.*;
 public class Minesweeper {
 
 	private boolean gameIsSet, gameEnded, highscoreEmpty;
-	private int width, height, mines, heightM, widthM, minesAtStart, left, pixels;
+	private int width, height, mines, minesAtStart, left, pixels;
 	private double score, loadedTime;
 	private String error, highscore, records;
 	private ArrayList<Integer> chooseFrom, chosen, neighbours;
@@ -287,51 +287,38 @@ public class Minesweeper {
 				if (width < 9 || width > 30) {
 					error += "Width out of bounds. Choose beetween 9 and 30\n";
 					if (width < 9) {
-						widthM = 9;
+						width = 9;
 						wText.setText("9");
 					} else {
-						widthM = 30;
+						width = 30;
 						wText.setText("30");
 					}
 				}
 				if (height < 9 || height > 24) {
 					error += "Height out of bounds. Choose beetween 9 and 24\n";
 					if (height < 9) {
-						heightM = 9;
+						height = 9;
 						hText.setText("9");
 					} else {
-						heightM = 24;
+						height = 24;
 						hText.setText("24");
 					}
 				}
-				if (mines < 10 || mines > (widthM - 1) * (heightM - 1)) {
-					if ((width > 8 && width < 31) && (height > 8 && height < 25)) {
-						widthM = width;
-						heightM = height;
-						error += "Mines range depends on size. For current size choose beetween 10 and "
-								+ (width - 1) * (height - 1);
-						if (mines < 10) {
-							mText.setText("10");
-						} else {
-							int text = (widthM - 1) * (heightM - 1);
-							mText.setText(Integer.toString(text));
-						}
+				if (mines < 10 || mines > (width - 1) * (height - 1)) {
+					error += "Mines range depends on size. For current size choose beetween 10 and "
+							+ (width - 1) * (height - 1);
+					if (mines < 10) {
+						mText.setText("10");
 					} else {
-						error += "Mines out of bounds. Choose beetween 10 and 667";
-						if (mines < 10) {
-							mText.setText("10");
-						} else {
-							int text = (widthM - 1) * (heightM - 1);
-							mText.setText(Integer.toString(text));
-						}
+						int text = (width - 1) * (height - 1);
+						mText.setText(Integer.toString(text));
 					}
 				}
+
 				JOptionPane.showMessageDialog(null, error);
 				width = 0;
 				height = 0;
 				mines = 0;
-				heightM = 0;
-				widthM = 0;
 			}
 		}
 		minesAtStart = mines;
@@ -369,7 +356,7 @@ public class Minesweeper {
 		System.out.println(highscore);
 		if (b.getMine()) {
 			bust();
-		} else if (b.getBombNeighbours()> 0) {
+		} else if (b.getBombNeighbours() > 0) {
 			if (b.isEnabled() && !b.isFlagged()) {
 				displayNum(b);
 				b.setEnabled(false);
@@ -669,7 +656,8 @@ public class Minesweeper {
 					chosen.add(chooseFrom.get(inde));
 					buttons.get(chooseFrom.get(inde)).setMine(true);
 					//
-					buttons.get(chooseFrom.get(inde)).setText("X");;
+					buttons.get(chooseFrom.get(inde)).setText("X");
+					;
 					//
 					chooseFrom.remove(chooseFrom.get(inde));
 				}
@@ -1136,11 +1124,11 @@ public class Minesweeper {
 
 			while (!gameEnded) {
 				currentTime = System.currentTimeMillis();
-					timerLabel.setText(String.format("Time:  %d:%02d     ", timerMinutes, timerSeconds));
-					currentTimer = (currentTime - startTime) / 1000.0 + loadedTime;
-					timerSeconds = (int) (currentTimer % 60);
-					timerMinutes = (int) (currentTimer / 60) % 60;
-					score = currentTimer;
+				timerLabel.setText(String.format("Time:  %d:%02d     ", timerMinutes, timerSeconds));
+				currentTimer = (currentTime - startTime) / 1000.0 + loadedTime;
+				timerSeconds = (int) (currentTimer % 60);
+				timerMinutes = (int) (currentTimer / 60) % 60;
+				score = currentTimer;
 				try {
 					Thread.sleep(100);
 				} catch (InterruptedException e) {
