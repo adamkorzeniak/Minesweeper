@@ -1,22 +1,22 @@
 import java.io.Serializable;
 
 public class SaveGame implements Serializable{
-	private String highscore;
-	private int width, height, mines, minesAtStart, minesLeft, pixels;
+	private String difficulty;
+	private int width, height, mines, minesAtStart, minesLeft, pixelsPerButton;
 	private double loadedTime;
 	
 	public SaveGame(String hscore, int w, int h, int m, int mAtStart, int ml, int p, double lt) {
-		highscore = hscore;
+		difficulty = hscore;
 		width = w;
 		height = h;
 		mines = m;
 		minesAtStart = mAtStart;
 		minesLeft = ml;
-		pixels = p;
+		pixelsPerButton = p;
 		loadedTime = lt;
 	}
 	public String getHighscore() {
-		return highscore;
+		return difficulty;
 	}
 	public int getWidth() {
 		return width;
@@ -34,7 +34,7 @@ public class SaveGame implements Serializable{
 		return minesLeft;
 	}
 	public int getPixels() {
-		return pixels;
+		return pixelsPerButton;
 	}
 	public double getLoadedTime() {
 		return loadedTime;
