@@ -7,14 +7,14 @@ import javax.swing.*;
 
 public class Minesweeper {
 
-	private boolean isSet, gameEnded, highscoreEmpty;
+	private boolean gameIsSet, gameEnded, highscoreEmpty;
 	private int width, height, mines, heightM, widthM, minesAtStart, left, pixels;
 	private double score, loadedTime;
 	private String error, highscore, records;
 	private ArrayList<Integer> chooseFrom, chosen, neighbours;
 	private ArrayList<Double> easyHighscore, mediumHighscore, expertHighscore, highscoreInput;
 	private ArrayList<NewButton> buttons;
-	private NewButton newGame, loadGame, initiate, reGame;
+	private NewButton newGameButton, loadGameButton, initiateButton, reGameButton;
 	private JFrame frame;
 	private ButtonGroup difficulty;
 	private JRadioButton easy, medium, expert, custom;
@@ -22,8 +22,8 @@ public class Minesweeper {
 	private JTextField wText, hText, mText;
 	private JLabel w, h, m, timerLabel, minesLeft, showRecords;
 	private GridLayout grid;
-	private JMenu menu;
 	private JMenuBar menuBar;
+	private JMenu menu;
 	private JMenuItem menuItem1, menuItem2, menuItem3;
 	private JComboBox box;
 	private ImageIcon flagIcon, mineIcon, blankIcon, num1, num2, num3, num4, num5, num6, num7, num8;
@@ -35,10 +35,10 @@ public class Minesweeper {
 	}
 
 	public void preMainMenu() {
-		newGame = new NewButton("New Game");
-		loadGame = new NewButton("Load Game");
-		newGame.addActionListener(new NewGameListener());
-		loadGame.addActionListener(new LoadGameListener());
+		newGameButton = new NewButton("New Game");
+		loadGameButton = new NewButton("Load Game");
+		newGameButton.addActionListener(new NewGameListener());
+		loadGameButton.addActionListener(new LoadGameListener());
 		pixels = 25;
 
 		menuBar = new JMenuBar();
@@ -67,8 +67,8 @@ public class Minesweeper {
 		num8 = new ImageIcon("images/num8.png");
 
 		frame = new JFrame("(Almost) The Best Minesweeper Game");
-		frame.add(newGame, BorderLayout.CENTER);
-		frame.add(loadGame, BorderLayout.SOUTH);
+		frame.add(newGameButton, BorderLayout.CENTER);
+		frame.add(loadGameButton, BorderLayout.SOUTH);
 		frame.setJMenuBar(menuBar);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setSize(300, 300);
@@ -82,7 +82,6 @@ public class Minesweeper {
 			is.close();
 			width = saveGame.getWidth();
 			height = saveGame.getHeight();
-			highscore = saveGame.getHighscore();
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
@@ -100,12 +99,15 @@ public class Minesweeper {
 			easyHighscore = (ArrayList<Double>) is.readObject();
 			mediumHighscore = (ArrayList<Double>) is.readObject();
 			expertHighscore = (ArrayList<Double>) is.readObject();
+			System.out.println(easyHighscore);
+			System.out.println(mediumHighscore);
+			System.out.println(expertHighscore);
 			is.close();
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
 		if (!(width > 0)) {
-			loadGame.setEnabled(false);
+			loadGameButton.setEnabled(false);
 		}
 	}
 
@@ -155,11 +157,11 @@ public class Minesweeper {
 		input.add(m);
 		input.add(mText);
 
-		initiate = new NewButton("Start Game");
-		initiate.setFont(new Font("SansSerif", Font.BOLD, 26));
-		initiate.addActionListener(new InitiateListener());
+		initiateButton = new NewButton("Start Game");
+		initiateButton.setFont(new Font("SansSerif", Font.BOLD, 26));
+		initiateButton.addActionListener(new InitiateListener());
 
-		frame.add(initiate, BorderLayout.SOUTH);
+		frame.add(initiateButton, BorderLayout.SOUTH);
 		frame.add(input, BorderLayout.CENTER);
 		frame.add(jradio, BorderLayout.NORTH);
 		frame.setSize(300, 300);
@@ -218,7 +220,7 @@ public class Minesweeper {
 			}
 		}
 
-		isSet = true;
+		gameIsSet = true;
 		gameEnded = false;
 		frame.addWindowListener(new CloseFrameListener());
 		frame.add(field, BorderLayout.CENTER);
@@ -275,6 +277,7 @@ public class Minesweeper {
 			width = Integer.parseInt(wText.getText());
 			height = Integer.parseInt(hText.getText());
 			mines = Integer.parseInt(mText.getText());
+			highscore = "custom";
 
 			if ((width > 8 && width < 31) && (height > 8 && height < 25)
 					&& (mines > 9 && mines < (width - 1) * (height - 1) + 1)) {
@@ -363,6 +366,7 @@ public class Minesweeper {
 	}
 
 	public void reveal(NewButton b) {
+		System.out.println(highscore);
 		if (b.getMine()) {
 			bust();
 		} else if (b.getBombNeighbours()> 0) {
@@ -428,13 +432,13 @@ public class Minesweeper {
 	}
 
 	public void setUpNextGame() {
-		isSet = false;
+		gameIsSet = false;
 		gameEnded = false;
 		frame.getContentPane().removeAll();
-		reGame = new NewButton("Play New Game");
+		reGameButton = new NewButton("Play New Game");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.add(reGame);
-		reGame.addActionListener(new NewGameListener());
+		frame.add(reGameButton);
+		reGameButton.addActionListener(new NewGameListener());
 		frame.setSize(300, 300);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setVisible(true);
@@ -642,8 +646,8 @@ public class Minesweeper {
 
 		public void mousePressed(MouseEvent m) {
 
-			if (m.getButton() == MouseEvent.BUTTON1 && !isSet) {
-				isSet = true;
+			if (m.getButton() == MouseEvent.BUTTON1 && !gameIsSet) {
+				gameIsSet = true;
 				displayNum((NewButton) m.getComponent());
 				m.getComponent().setEnabled(false);
 				((NewButton) (m.getComponent())).deFlag();
@@ -664,6 +668,9 @@ public class Minesweeper {
 					int inde = (int) (Math.random() * chooseFrom.size());
 					chosen.add(chooseFrom.get(inde));
 					buttons.get(chooseFrom.get(inde)).setMine(true);
+					//
+					buttons.get(chooseFrom.get(inde)).setText("X");;
+					//
 					chooseFrom.remove(chooseFrom.get(inde));
 				}
 				for (NewButton b : buttons) {
@@ -690,12 +697,12 @@ public class Minesweeper {
 				Time time = new Time();
 				Thread timer = new Thread(time);
 				timer.start();
-			} else if (isSet && m.getButton() == MouseEvent.BUTTON1 && m.getComponent().isEnabled()) {
+			} else if (gameIsSet && m.getButton() == MouseEvent.BUTTON1 && m.getComponent().isEnabled()) {
 				NewButton butt = (NewButton) (m.getComponent());
 				if (!butt.isFlagged()) {
 					reveal((NewButton) (m.getComponent()));
 				}
-			} else if (isSet && m.getButton() == MouseEvent.BUTTON3) {
+			} else if (gameIsSet && m.getButton() == MouseEvent.BUTTON3) {
 				if (m.getComponent().isEnabled()) {
 					NewButton flag = (NewButton) (m.getComponent());
 					if (!flag.isFlagged()) {
@@ -728,10 +735,7 @@ public class Minesweeper {
 				}
 				if (score > 0) {
 					Highscore highscoreOutput = new Highscore(easyHighscore, mediumHighscore, expertHighscore);
-					System.out.println(highscore.equals("easy"));
-					System.out.println(highscore);
 					if (highscore.equals("easy")) {
-						System.out.println("inside");
 						for (Double el : easyHighscore) {
 							if (score < el) {
 								if (easyHighscore.indexOf(el) == 0) {
@@ -835,6 +839,11 @@ public class Minesweeper {
 							expertHighscore.remove(5);
 						}
 						highscoreOutput.setHighscoreList("expert", expertHighscore);
+					} else {
+						information = "Contratulations, you won the game \nYour score is: ";
+						int scoreSeconds = (int) (score % 60);
+						int scoreMinutes = (int) (score / 60) % 60;
+						information += String.format("%d:%02d", scoreMinutes, scoreSeconds);
 					}
 					try {
 						FileOutputStream fileStream = new FileOutputStream("data/Highscores.sav");
@@ -873,7 +882,7 @@ public class Minesweeper {
 		}
 
 		public void mousePressed(MouseEvent m) {
-			if (isSet && m.getButton() == MouseEvent.BUTTON3) {
+			if (gameIsSet && m.getButton() == MouseEvent.BUTTON3) {
 				if (m.getComponent().isEnabled()) {
 					NewButton flag = (NewButton) (m.getComponent());
 					if (flag.isFlagged()) {
@@ -901,7 +910,7 @@ public class Minesweeper {
 		}
 
 		public void windowClosing(WindowEvent arg0) {
-			if (isSet) {
+			if (gameIsSet) {
 				frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 				int result = JOptionPane.showConfirmDialog(null, "Save game?", "Do you want to save game",
 						JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
@@ -941,7 +950,7 @@ public class Minesweeper {
 	public class MenuListener implements ActionListener {
 		public void actionPerformed(ActionEvent a) {
 			if (a.getSource() == menuItem1) {
-				if (isSet) {
+				if (gameIsSet) {
 					int result = JOptionPane.showConfirmDialog(null, "Start new game?", "Do you want to start new game",
 							JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
 
@@ -1021,7 +1030,7 @@ public class Minesweeper {
 				dialog.showMessageDialog(null, things);
 
 			} else if (a.getSource() == menuItem3) {
-				if (isSet) {
+				if (gameIsSet) {
 					frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 					int result = JOptionPane.showConfirmDialog(null, "Save game?", "Do you want to save game",
 							JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
@@ -1075,7 +1084,7 @@ public class Minesweeper {
 				records = "<html>Best results for Pro level: <br>";
 				for (Double el : mediumHighscore) {
 					if (el < 99999) {
-						highscoreEmpty = true;
+						highscoreEmpty = false;
 						int scoreSeconds = (int) (el % 60);
 						int scoreMinutes = (int) (el / 60) % 60;
 						int place = mediumHighscore.indexOf(el) + 1;
@@ -1093,8 +1102,8 @@ public class Minesweeper {
 			} else if (box.getSelectedIndex() == 2) {
 				records = "<html>Best results for Expert level: <br>";
 				for (Double el : expertHighscore) {
-					highscoreEmpty = true;
 					if (el < 99999) {
+						highscoreEmpty = false;
 						int scoreSeconds = (int) (el % 60);
 						int scoreMinutes = (int) (el / 60) % 60;
 						int place = expertHighscore.indexOf(el) + 1;
