@@ -1,3 +1,5 @@
+package com.github.adkorzen;
+
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
@@ -5,6 +7,11 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import javax.swing.*;
 
+/**
+ * Class responsible for actions of Minesweeper Game
+ * 
+ * @author Adam Korzeniak
+ */
 public class Minesweeper {
 
 	private boolean gameIsSet, gameEnded, highscoreListEmpty;
@@ -14,7 +21,7 @@ public class Minesweeper {
 	private ArrayList<Integer> possibleMine, chosenMine, neighbours, neighboursTemporary, neighboursTemporary2;
 	private ArrayList<Double> easyHighscore, mediumHighscore, expertHighscore;
 	private ArrayList<NewButton> buttons;
-	private NewButton newGameButton, loadGameButton, initiateButton, reGameButton;
+	private JButton newGameButton, loadGameButton, initiateButton, reGameButton;
 	private JFrame frame;
 	private ButtonGroup difficultyButtons;
 	private JRadioButton easyButton, mediumButton, expertButton, customButton;
@@ -36,9 +43,22 @@ public class Minesweeper {
 		new Minesweeper().preMainMenu();
 	}
 
+	/**
+	 * <b>preMainMenu</b> <br>
+	 * <br>
+	 * <i>public void preMainMenu()</i> <br>
+	 * <br>
+	 * Creates first main menu with "New Game" and "Load Game" Buttons and menu
+	 * with three menu items: "Start New Game", "Highscores" and "Close". Loads
+	 * images, highscores and save game setting file. <br>
+	 * "Load Game" Button is disabled if there's no "data/GameSet.sav" file.
+	 * <br>
+	 * If there's no Highscore.sav file, it creates one without(99999 seconds)
+	 * results.
+	 */
 	public void preMainMenu() {
-		newGameButton = new NewButton("New Game");
-		loadGameButton = new NewButton("Load Game");
+		newGameButton = new JButton("New Game");
+		loadGameButton = new JButton("Load Game");
 		newGameButton.addActionListener(new NewGameListener());
 		loadGameButton.addActionListener(new LoadGameListener());
 		pixelsPerButton = 25;
@@ -93,7 +113,7 @@ public class Minesweeper {
 		folder.mkdir();
 
 		if (!hScore.exists()) {
-			new Highscore().go();
+			new Highscore();
 		}
 		try {
 			FileInputStream fileStream = new FileInputStream("data/Highscores.sav");
@@ -110,6 +130,14 @@ public class Minesweeper {
 		}
 	}
 
+	/**
+	 * <b>mainMenu</b> <br>
+	 * <br>
+	 * <i>public void mainMenu()</i> <br>
+	 * <br>
+	 * Creates preGame menu that gives user ability to choose one of default
+	 * difficulties or establish custom one.
+	 */
 	public void mainMenu() {
 
 		frame.getContentPane().removeAll();
@@ -156,7 +184,7 @@ public class Minesweeper {
 		inputPanel.add(minesLabel);
 		inputPanel.add(minesCustom);
 
-		initiateButton = new NewButton("Start Game");
+		initiateButton = new JButton("Start Game");
 		initiateButton.setFont(new Font("SansSerif", Font.BOLD, 26));
 		initiateButton.addActionListener(new InitiateListener());
 
@@ -167,6 +195,16 @@ public class Minesweeper {
 		frame.setVisible(true);
 	}
 
+	/**
+	 * <b>loadGame</b> <br>
+	 * <br>
+	 * <i>public void loadGame()</i> <br>
+	 * <br>
+	 * Loads Game.save file (GameSet.sav was loaded when application was
+	 * launched). <br>
+	 * Sets values of current game to values from loaded files <br>
+	 * Creates buttons, labels, and new thread counting time.
+	 */
 	public void loadGame() {
 		buttons = new ArrayList<NewButton>();
 		try {
@@ -177,21 +215,7 @@ public class Minesweeper {
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
-		File hScore = new File("data/Highscores.sav");
-		if (!hScore.exists()) {
-			new Highscore().go();
-		}
-		try {
-			FileInputStream fileStream = new FileInputStream("data/Highscores.sav");
-			ObjectInputStream is = new ObjectInputStream(fileStream);
-			easyHighscore = (ArrayList<Double>) is.readObject();
-			mediumHighscore = (ArrayList<Double>) is.readObject();
-			expertHighscore = (ArrayList<Double>) is.readObject();
-			is.close();
 
-		} catch (Exception ex) {
-			ex.printStackTrace();
-		}
 		pixelsPerButton = saveGame.getPixels();
 		mines = saveGame.getMines();
 		minesLeft = saveGame.getMinesLeft();
@@ -233,6 +257,14 @@ public class Minesweeper {
 		frame.setVisible(true);
 	}
 
+	/**
+	 * <b>saveGame</b> <br>
+	 * <br>
+	 * <i>public void saveGame()</i> <br>
+	 * <br>
+	 * Saves game. Buttons properties goes to Game.sav file. Settings of game go
+	 * into GameSet.sav file.
+	 */
 	public void saveGame() {
 		try {
 			FileOutputStream fileStream = new FileOutputStream("data/Game.sav");
@@ -254,6 +286,18 @@ public class Minesweeper {
 		}
 	}
 
+	/**
+	 * <b>setData</b> <br>
+	 * <br>
+	 * <i>public void setData()</i> <br>
+	 * <br>
+	 * Sets width, height, amount of mines and difficulty level for game. <br>
+	 * If values are not permitted corrects them to allowable values and shows
+	 * what values were incorrect. <br>
+	 * Also sets variable minesAtStart and minesLeft which will be used to
+	 * examine if number of unrevealed squares matches amount of bombs to tell
+	 * if game is won.
+	 */
 	public void setData() {
 		if (easyButton.isSelected()) {
 			width = 9;
@@ -321,6 +365,14 @@ public class Minesweeper {
 		minesLeft = width * height;
 	}
 
+	/**
+	 * <b>setUpGame</b> <br>
+	 * <br>
+	 * <i>public void setUpGame()</i> <br>
+	 * <br>
+	 * Creates labels with number of mines left and timer. Creates and arranges
+	 * field.
+	 */
 	public void setUpGame() {
 		frame.getContentPane().removeAll();
 		timerLabel = new JLabel("Time: 0:00     ");
@@ -348,6 +400,23 @@ public class Minesweeper {
 		frame.setVisible(true);
 	}
 
+	/**
+	 * <b>reveal</b> <br>
+	 * <br>
+	 * <i>public void reveal(NewButton b)</i> <br>
+	 * <br>
+	 * Reveals clicked square, checks if it is mine or if it neighbours mine.
+	 * <br>
+	 * If square clicked is mine, it reveals whole game field and shows failure
+	 * message. <br>
+	 * If square clicked neighbours mine, displays on it how many mines surround
+	 * it. <br>
+	 * If square clicked neighbours no mine, reveals all neighnours and check
+	 * them then.
+	 * 
+	 * @param b
+	 *            - Square clicked to be revealed.
+	 */
 	public void reveal(NewButton b) {
 		if (b.getMine()) {
 			bust();
@@ -409,6 +478,15 @@ public class Minesweeper {
 		}
 	}
 
+	/**
+	 * <b>bust</b> <br>
+	 * <br>
+	 * <i>public void bust()</i> <br>
+	 * <br>
+	 * Runs when player clicked a bomb. Reveals all field, deletes save game
+	 * files if exists and shows failure message. Then calls method to setup new
+	 * game.
+	 */
 	public void bust() {
 		gameEnded = true;
 		for (NewButton b : buttons) {
@@ -437,11 +515,18 @@ public class Minesweeper {
 		setUpNextGame();
 	}
 
+	/**
+	 * <b>setUpNextGame</b> <br>
+	 * <br>
+	 * <i>public void setUpNextGame()</i> <br>
+	 * <br>
+	 * Creates frame with one button to play new Game.
+	 */
 	public void setUpNextGame() {
 		gameIsSet = false;
 		gameEnded = false;
 		frame.getContentPane().removeAll();
-		reGameButton = new NewButton("Play New Game");
+		reGameButton = new JButton("Play New Game");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.add(reGameButton);
 		reGameButton.addActionListener(new NewGameListener());
@@ -450,33 +535,114 @@ public class Minesweeper {
 		frame.setVisible(true);
 	}
 
+	/**
+	 * <b>getButton</b> <br>
+	 * <br>
+	 * <i>public NewButton getButton(int x, int y)</i> <br>
+	 * <br>
+	 * Returns button on given coordinates (x, y)
+	 * 
+	 * @param x
+	 *            - x axis coordinates of square
+	 * @param y
+	 *            - y axis coordinates of square
+	 * @return NewButton located on square placed (x, y) on field
+	 */
 	public NewButton getButton(int x, int y) {
 		int index = x + width * (y - 1) - 1;
 		return buttons.get(index);
 	}
 
+	/**
+	 * <b>getIndex</b> <br>
+	 * <br>
+	 * <i>public int getIndex(int x, int y)</i> <br>
+	 * <br>
+	 * Returns index of button on given coordinates (x, y).
+	 * 
+	 * @param x
+	 *            - x axis coordinates of square
+	 * @param y
+	 *            - y axis coordinates of square
+	 * @return index of square placed (x, y) on field
+	 */
 	public int getIndex(int x, int y) {
 		return x + width * (y - 1) - 1;
 	}
 
+	/**
+	 * <b>getX</b> <br>
+	 * <br>
+	 * <i>getX(NewButton b)</i> <br>
+	 * <br>
+	 * Returns x coordinate of given button.
+	 * 
+	 * @param b
+	 *            - button to get his x coordinate
+	 * @return x coordinate of given button.
+	 */
 	public int getX(NewButton b) {
 		int index = buttons.indexOf(b);
 		return (index) % width + 1;
 	}
 
+	/**
+	 * <b>getX</b> <br>
+	 * <br>
+	 * <i>getX(int index)</i> <br>
+	 * <br>
+	 * Returns x coordinate of button with given index.
+	 * 
+	 * @param index
+	 *            - index of button to get his x coordinate
+	 * @return x coordinate of button with given index.
+	 */
 	public int getX(int index) {
 		return (index) % width + 1;
 	}
 
+	/**
+	 * <b>getY</b> <br>
+	 * <br>
+	 * <i>getY(NewButton b)</i> <br>
+	 * <br>
+	 * Returns y coordinate of given button.
+	 * 
+	 * @param b
+	 *            - button to get his y coordinate
+	 * @return y coordinate of given button.
+	 */
 	public int getY(NewButton b) {
 		double index = buttons.indexOf(b);
 		return (int) ((index / width + 1));
 	}
 
+	/**
+	 * <b>getY</b> <br>
+	 * <br>
+	 * <i>getY(int index)</i> <br>
+	 * <br>
+	 * Returns y coordinate of button with given index.
+	 * 
+	 * @param index
+	 *            - index of button to get his y coordinate
+	 * @return y coordinate of button with given index.
+	 */
 	public int getY(int index) {
 		return (int) (int) ((index / width + 1));
 	}
 
+	/**
+	 * <b>neighbours</b> <br>
+	 * <br>
+	 * <i>public void neighbours(int index)</i> <br>
+	 * <br>
+	 * Creates ArrayList with indexes of buttons, neighbouring button with
+	 * passed in parameter index.
+	 * 
+	 * @param index
+	 *            - index of button to find his neighbours.
+	 */
 	public void neighbours(int index) {
 		int x = getX(index);
 		int y = getY(index);
@@ -542,6 +708,16 @@ public class Minesweeper {
 		}
 	}
 
+	/**
+	 * <b>displayNum</b> <br>
+	 * <br>
+	 * <i>public void displayNum(NewButton b)</i> <br>
+	 * <br>
+	 * On given button, displays number of mines he neighbours.
+	 * 
+	 * @param b
+	 *            - button to display number of mines he neighbours.
+	 */
 	public void displayNum(NewButton b) {
 		if (!b.getMine()) {
 			switch (b.getBombNeighbours()) {
@@ -585,6 +761,13 @@ public class Minesweeper {
 		}
 	}
 
+	/**
+	 * <b>updateMines</b> <br>
+	 * <br>
+	 * <i>public void updateMines()</i> <br>
+	 * <br>
+	 * Updates and sets value of mines not being flagged.
+	 */
 	public void updateMines() {
 		mines = minesAtStart;
 		for (NewButton a : buttons) {
@@ -595,18 +778,42 @@ public class Minesweeper {
 		minesLeftLAbel.setText("Mines left:" + mines);
 	}
 
+	/**
+	 * <b>NewGameListener</b> <br>
+	 * <br>
+	 * Listens to action performed on "New Game" button. If button is clicked it
+	 * calls method responsible for setting difficulty level.
+	 * 
+	 * @author Adam Korzeniak
+	 */
 	public class NewGameListener implements ActionListener {
 		public void actionPerformed(ActionEvent a) {
 			mainMenu();
 		}
 	}
 
+	/**
+	 * <b>LoadGameListener</b> <br>
+	 * <br>
+	 * Listens to action performed on "Load Game" button. If button is clicked
+	 * it calls method responsible for loading game.
+	 * 
+	 * @author Adam Korzeniak
+	 */
 	public class LoadGameListener implements ActionListener {
 		public void actionPerformed(ActionEvent a) {
 			loadGame();
 		}
 	}
 
+	/**
+	 * <b>CustomListener</b> <br>
+	 * <br>
+	 * Listens to action performed while changing difficulty level. If custom is
+	 * chosen it highlights fields to set setting. Otherwise they're greyed out.
+	 * 
+	 * @author Adam Korzeniak
+	 */
 	public class CustomListener implements ActionListener {
 		public void actionPerformed(ActionEvent a) {
 			if (customButton.isSelected()) {
@@ -621,6 +828,15 @@ public class Minesweeper {
 		}
 	}
 
+	/**
+	 * <b>InitiateListener</b> <br>
+	 * <br>
+	 * Listens to action performed on "Start Game" button. If button is clicked
+	 * it calls method responsible for setting game data and deletes save game
+	 * files if they exist.
+	 * 
+	 * @author Adam Korzeniak
+	 */
 	public class InitiateListener implements ActionListener {
 		public void actionPerformed(ActionEvent a) {
 
@@ -637,6 +853,17 @@ public class Minesweeper {
 		}
 	}
 
+	/**
+	 * <b>ButtonListener</b> <br>
+	 * <br>
+	 * Listens to action performed on game main field. <br>
+	 * With first square being revealed it sets mine location. <br>
+	 * With mouse left click reveals square, with right click flags square and
+	 * prevents it from being clicked by giving it other listener. <br>
+	 * Checks if game is won. Then shows message and update highscore lists.
+	 * 
+	 * @author Adam Korzeniak
+	 */
 	public class ButtonListener implements MouseListener {
 
 		public void mouseClicked(MouseEvent m) {
@@ -875,6 +1102,14 @@ public class Minesweeper {
 		}
 	}
 
+	/**
+	 * <b>FlagListener</b> <br>
+	 * <br>
+	 * Works with flagged squares. If one is right clicked listener "deflags" it
+	 * and sets it back to "default" listener.
+	 * 
+	 * @author Adam Korzeniak
+	 */
 	public class FlagListener implements MouseListener {
 		public void mouseClicked(MouseEvent m) {
 		}
@@ -905,6 +1140,14 @@ public class Minesweeper {
 		}
 	}
 
+	/**
+	 * <b>CloseFrameListener</b> <br>
+	 * <br>
+	 * Checks if windows is being closed. If game is going shows dialog window
+	 * with option to accept saving, deny it or go back to game.
+	 * 
+	 * @author Adam Korzeniak
+	 */
 	public class CloseFrameListener implements WindowListener {
 
 		public void windowActivated(WindowEvent arg0) {
@@ -950,7 +1193,13 @@ public class Minesweeper {
 		public void windowOpened(WindowEvent arg0) {
 		}
 	}
-
+	/**
+	 * <b>MenuListener</b> <br>
+	 * <br>
+	 * Listens to actions performed on menu bar. Starts new game, shows highscores or closes application.
+	 * 
+	 * @author Adam Korzeniak
+	 */
 	public class MenuListener implements ActionListener {
 		public void actionPerformed(ActionEvent a) {
 			if (a.getSource() == menuItemNewGame) {
@@ -1061,7 +1310,14 @@ public class Minesweeper {
 		}
 
 	}
-
+	/**
+	 * <b>ComboboxListener</b> <br>
+	 * <br>
+	 * Listens to actions performed on comboBox on dialog showing highscores.
+	 * Shows results for easy, medium and expert difficulty
+	 * 
+	 * @author Adam Korzeniak
+	 */
 	public class ComboboxListener implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
 
@@ -1125,7 +1381,13 @@ public class Minesweeper {
 			}
 		}
 	}
-
+	/**
+	 * <b>Time</b> <br>
+	 * <br>
+	 * Used to create new thread responsible for running timer.
+	 * 
+	 * @author Adam Korzeniak
+	 */
 	public class Time implements Runnable {
 		long startTime, currentTime;
 		double currentTimer;
