@@ -15,7 +15,7 @@ import javax.swing.*;
 public class Minesweeper {
 
 	private boolean gameIsSet, gameEnded, highscoreListEmpty;
-	private int width, height, mines, minesAtStart, minesLeft, pixelsPerButton;
+	private int width, height, mines, minesAtStart, minesLeft, pixelsPerButton, monitorWidth, monitorHeight;
 	private double score, loadedTime;
 	private String error, difficulty, bestRecords;
 	private ArrayList<Integer> possibleMine, chosenMine, neighbours, neighboursTemporary, neighboursTemporary2;
@@ -30,8 +30,8 @@ public class Minesweeper {
 	private JLabel widthLabel, heightLabel, minesLabel, timerLabel, minesLeftLAbel, showRecordsLabel;
 	private GridLayout grid;
 	private JMenuBar menuBar;
-	private JMenu menu;
-	private JMenuItem menuItemNewGame, menuItemHighscores, menuItemCloseGame;
+	private JMenu menuFile, menuHelp;
+	private JMenuItem menuItemNewGame, menuItemHighscores, menuItemCloseGame, menuItemInformations;
 	private JComboBox comboBox;
 	private ImageIcon flagIcon, mineIcon, blankIcon, numIcon1, numIcon2, numIcon3, numIcon4, numIcon5, numIcon6,
 			numIcon7, numIcon8;
@@ -61,20 +61,24 @@ public class Minesweeper {
 		loadGameButton = new JButton("Load Game");
 		newGameButton.addActionListener(new NewGameListener());
 		loadGameButton.addActionListener(new LoadGameListener());
-		pixelsPerButton = 25;
 
 		menuBar = new JMenuBar();
-		menu = new JMenu("File");
-		menuBar.add(menu);
+		menuFile = new JMenu("File");
+		menuHelp = new JMenu("Help");
+		menuBar.add(menuFile);
+		menuBar.add(menuHelp);
 		menuItemNewGame = new JMenuItem("Start New Game");
 		menuItemHighscores = new JMenuItem("Highscores");
 		menuItemCloseGame = new JMenuItem("Close");
-		menu.add(menuItemNewGame);
-		menu.add(menuItemHighscores);
-		menu.add(menuItemCloseGame);
+		menuItemInformations = new JMenuItem("Informations");
+		menuFile.add(menuItemNewGame);
+		menuFile.add(menuItemHighscores);
+		menuFile.add(menuItemCloseGame);
+		menuHelp.add(menuItemInformations);
 		menuItemNewGame.addActionListener(new MenuListener());
 		menuItemHighscores.addActionListener(new MenuListener());
 		menuItemCloseGame.addActionListener(new MenuListener());
+		menuItemInformations.addActionListener(new MenuListener());
 
 		flagIcon = new ImageIcon("images/flag.png");
 		blankIcon = new ImageIcon("images/blank.png");
@@ -88,11 +92,17 @@ public class Minesweeper {
 		numIcon7 = new ImageIcon("images/num7.png");
 		numIcon8 = new ImageIcon("images/num8.png");
 
+		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+		monitorWidth = (int) screenSize.getWidth();
+		monitorHeight = (int) screenSize.getHeight();
+		pixelsPerButton = monitorWidth/54;
+
 		frame = new JFrame("(Almost) The Best Minesweeper Game");
 		frame.add(newGameButton, BorderLayout.CENTER);
 		frame.add(loadGameButton, BorderLayout.SOUTH);
 		frame.setJMenuBar(menuBar);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setLocation((monitorWidth - 300)/2, (monitorHeight - 300)/2);
 		frame.setSize(300, 300);
 		frame.setResizable(false);
 		frame.setVisible(true);
@@ -1196,7 +1206,7 @@ public class Minesweeper {
 	/**
 	 * <b>MenuListener</b> <br>
 	 * <br>
-	 * Listens to actions performed on menu bar. Starts new game, shows highscores or closes application.
+	 * Listens to actions performed on menu bar. Starts new game, shows highscores, closes application and shows game informations.
 	 * 
 	 * @author Adam Korzeniak
 	 */
@@ -1306,6 +1316,18 @@ public class Minesweeper {
 				} else {
 					System.exit(0);
 				}
+			} else if (a.getSource()==menuItemInformations) {
+				JTextArea[] message = new JTextArea[3];
+				message[0] = new JTextArea("\n(Almost) The Best Minesweeper Game        ");
+				message[1] = new JTextArea("\n Author: Adam Korzeniak");
+				message[2] =  new JTextArea("\n email:  adkorzen@gmail.com");
+				for (JTextArea element: message) {
+					element.setOpaque(false);
+					element.setEditable(false);
+				}
+				message[2].setCursor(Cursor.getPredefinedCursor(Cursor.TEXT_CURSOR));
+
+				JOptionPane.showMessageDialog(frame, message);
 			}
 		}
 
