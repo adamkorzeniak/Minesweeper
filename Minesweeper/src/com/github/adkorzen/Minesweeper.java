@@ -972,7 +972,7 @@ public class Minesweeper {
 								if (easyHighscore.indexOf(el) == 0) {
 									information = "Contratulations, you beat the Highscore \nYour score is: ";
 									int scoreSeconds = (int) (score % 60);
-									int scoreMinutes = (int) (score / 60) % 60;
+									int scoreMinutes = (int) (score / 60);
 									information += String.format("%d:%02d", scoreMinutes, scoreSeconds);
 								} else if (easyHighscore.indexOf(el) > 0) {
 									String th = "th";
@@ -985,7 +985,7 @@ public class Minesweeper {
 									information = "Contratulations, you achieved " + (easyHighscore.indexOf(el) + 1)
 											+ th + " result \nYour score is: ";
 									int scoreSeconds = (int) (score % 60);
-									int scoreMinutes = (int) (score / 60) % 60;
+									int scoreMinutes = (int) (score / 60);
 									information += String.format("%d:%02d", scoreMinutes, scoreSeconds);
 								}
 								easyHighscore.add(easyHighscore.indexOf(el), new Double(score));
@@ -993,7 +993,7 @@ public class Minesweeper {
 							}
 							information = "Contratulations, you won the game \nYour score is: ";
 							int scoreSeconds = (int) (score % 60);
-							int scoreMinutes = (int) (score / 60) % 60;
+							int scoreMinutes = (int) (score / 60);
 							information += String.format("%d:%02d", scoreMinutes, scoreSeconds);
 						}
 						if (easyHighscore.size() > 5) {
@@ -1007,7 +1007,7 @@ public class Minesweeper {
 								if (mediumHighscore.indexOf(el) == 0) {
 									information = "Contratulations, you beat the Highscore \nYour score is: ";
 									int scoreSeconds = (int) (score % 60);
-									int scoreMinutes = (int) (score / 60) % 60;
+									int scoreMinutes = (int) (score / 60);
 									information += String.format("%d:%02d", scoreMinutes, scoreSeconds);
 								} else if (mediumHighscore.indexOf(el) > 0) {
 									String th = "th";
@@ -1020,7 +1020,7 @@ public class Minesweeper {
 									information = "Contratulations, you achieved " + (mediumHighscore.indexOf(el) + 1)
 											+ th + " result \nYour score is: ";
 									int scoreSeconds = (int) (score % 60);
-									int scoreMinutes = (int) (score / 60) % 60;
+									int scoreMinutes = (int) (score / 60);
 									information += String.format("%d:%02d", scoreMinutes, scoreSeconds);
 								}
 								mediumHighscore.add(mediumHighscore.indexOf(el), new Double(score));
@@ -1028,7 +1028,7 @@ public class Minesweeper {
 							}
 							information = "Contratulations, you won the game \nYour score is: ";
 							int scoreSeconds = (int) (score % 60);
-							int scoreMinutes = (int) (score / 60) % 60;
+							int scoreMinutes = (int) (score / 60);
 							information += String.format("%d:%02d", scoreMinutes, scoreSeconds);
 						}
 						if (mediumHighscore.size() > 5) {
@@ -1042,7 +1042,7 @@ public class Minesweeper {
 								if (expertHighscore.indexOf(el) == 0) {
 									information = "Contratulations, you beat the Highscore \nYour score is: ";
 									int scoreSeconds = (int) (score % 60);
-									int scoreMinutes = (int) (score / 60) % 60;
+									int scoreMinutes = (int) (score / 60);
 									information += String.format("%d:%02d", scoreMinutes, scoreSeconds);
 								} else if (expertHighscore.indexOf(el) > 0) {
 									String th = "th";
@@ -1055,7 +1055,7 @@ public class Minesweeper {
 									information = "Contratulations, you achieved " + (expertHighscore.indexOf(el) + 1)
 											+ th + " result \nYour score is: ";
 									int scoreSeconds = (int) (score % 60);
-									int scoreMinutes = (int) (score / 60) % 60;
+									int scoreMinutes = (int) (score / 60);
 									information += String.format("%d:%02d", scoreMinutes, scoreSeconds);
 								}
 								expertHighscore.add(expertHighscore.indexOf(el), new Double(score));
@@ -1063,7 +1063,7 @@ public class Minesweeper {
 							}
 							information = "Contratulations, you won the game \nYour score is: ";
 							int scoreSeconds = (int) (score % 60);
-							int scoreMinutes = (int) (score / 60) % 60;
+							int scoreMinutes = (int) (score / 60);
 							information += String.format("%d:%02d", scoreMinutes, scoreSeconds);
 						}
 						if (expertHighscore.size() > 5) {
@@ -1073,7 +1073,7 @@ public class Minesweeper {
 					} else {
 						information = "Contratulations, you won the game \nYour score is: ";
 						int scoreSeconds = (int) (score % 60);
-						int scoreMinutes = (int) (score / 60) % 60;
+						int scoreMinutes = (int) (score / 60);
 						information += String.format("%d:%02d", scoreMinutes, scoreSeconds);
 					}
 					try {
@@ -1270,7 +1270,7 @@ public class Minesweeper {
 					if (el < 99999) {
 						highscoreListEmpty = false;
 						int scoreSeconds = (int) (el % 60);
-						int scoreMinutes = (int) (el / 60) % 60;
+						int scoreMinutes = (int) (el / 60);
 						int place = easyHighscore.indexOf(el) + 1;
 						bestRecords += place + "<html>:      " + String.format("%d:%02d", scoreMinutes, scoreSeconds)
 								+ "<br>";
@@ -1349,7 +1349,7 @@ public class Minesweeper {
 					if (el < 99999) {
 						highscoreListEmpty = false;
 						int scoreSeconds = (int) (el % 60);
-						int scoreMinutes = (int) (el / 60) % 60;
+						int scoreMinutes = (int) (el / 60);
 						int place = easyHighscore.indexOf(el) + 1;
 						bestRecords += place + "<html>:      " + String.format("%d:%02d", scoreMinutes, scoreSeconds)
 								+ "<br>";
@@ -1368,7 +1368,7 @@ public class Minesweeper {
 					if (el < 99999) {
 						highscoreListEmpty = false;
 						int scoreSeconds = (int) (el % 60);
-						int scoreMinutes = (int) (el / 60) % 60;
+						int scoreMinutes = (int) (el / 60);
 						int place = mediumHighscore.indexOf(el) + 1;
 						bestRecords += place + "<html>:      " + String.format("%d:%02d", scoreMinutes, scoreSeconds)
 								+ "<br>";
@@ -1387,7 +1387,7 @@ public class Minesweeper {
 					if (el < 99999) {
 						highscoreListEmpty = false;
 						int scoreSeconds = (int) (el % 60);
-						int scoreMinutes = (int) (el / 60) % 60;
+						int scoreMinutes = (int) (el / 60);
 						int place = expertHighscore.indexOf(el) + 1;
 						bestRecords += place + "<html>:      " + String.format("%d:%02d", scoreMinutes, scoreSeconds)
 								+ "<br>";
@@ -1427,7 +1427,7 @@ public class Minesweeper {
 				timerLabel.setText(String.format("Time:  %d:%02d     ", timerMinutes, timerSeconds));
 				currentTimer = (currentTime - startTime) / 1000.0 + loadedTime;
 				timerSeconds = (int) (currentTimer % 60);
-				timerMinutes = (int) (currentTimer / 60) % 60;
+				timerMinutes = (int) (currentTimer / 60);
 				score = currentTimer;
 				try {
 					Thread.sleep(100);
