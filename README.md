@@ -16,4 +16,4 @@ Features:
 * Highscore view for 5 fastest completed games at certain standard difficulty,
 * Possibility to save and load previously saved game.
 
-*This project have been created during February and March 2015.*
+*This project have been created during February and March 2016.*
