@@ -16,6 +16,6 @@ Features:
 * Highscore view for 5 fastest completed games at certain standard difficulty,
 * Possibility to save and load previously saved game.
 
-*You can download external jar libraries and runnable JAR file from: https://www.dropbox.com/sh/4gcouaq86t76d47/AABEP1f-uyTAdGn2o-TcUjxua?dl=0*
+*You can download runnable JAR file from: https://www.dropbox.com/sh/4gcouaq86t76d47/AABEP1f-uyTAdGn2o-TcUjxua?dl=0*
 
 *This project have been created during February and March 2016.*
